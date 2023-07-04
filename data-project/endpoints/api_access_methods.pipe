@@ -1,0 +1,29 @@
+TOKEN "dashboard_token" READ
+
+NODE access_ok
+SQL >
+
+    %
+    SELECT *
+    FROM pubsub_events_mv
+    where access_granted = 1
+    and customer_id= {{String(customerId, 'Customer92092')}}
+
+
+
+NODE count_access
+SQL >
+
+    SELECT device_type, count() as total from access_ok
+    GROUP BY device_type
+    ORDER BY total DESC
+
+
+
+NODE endpoint
+SQL >
+
+    WITH (SELECT sum(total) FROM count_access) AS total_acesses
+    SELECT *, round(100*total/total_acesses,2) as percentage FROM count_access
+
+

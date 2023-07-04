@@ -1,0 +1,38 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# data-project
+/data-project/.tinyb
+
+# dependencies
+/dashboard/node_modules/*
+/dashboard/.pnp
+/dashboard.pnp.js
+
+# testing
+/dashboard/coverage
+
+# next.js
+/dashboard/.next/
+/dashboard/out/
+
+# production
+/dashboard/build
+
+# misc
+/dashboard/.DS_Store
+/dashboard/*.pem
+
+# debug
+/dashboard/npm-debug.log*
+/dashboard/yarn-debug.log*
+/dashboard/yarn-error.log*
+
+# local env files
+/dashboard/.env*.local
+
+# vercel
+/dashboard/.vercel
+
+# typescript
+/dashboard/*.tsbuildinfo
+/dashboard/next-env.d.ts

@@ -1,0 +1,20 @@
+NODE access_device_usage_0
+SQL >
+
+    SELECT
+        toStartOfFiveMinutes(datetime) AS datetime_window,
+        device_type,
+        countIfState(access_granted = 1) AS cnt_success,
+        countIfState(access_granted = 0) AS cnt_failure
+    FROM pubsub_events_mv
+    GROUP BY
+        datetime_window,
+        device_type
+    ORDER BY datetime_window ASC
+
+TYPE materialized
+DATASOURCE access_device_usage_mv
+ENGINE "AggregatingMergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(datetime_window)"
+ENGINE_SORTING_KEY "datetime_window, device_type"
+

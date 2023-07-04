@@ -14,19 +14,23 @@ SQL >
 
 
 
-NODE count_access
+NODE timely_grouped_access
 SQL >
 
-    SELECT device_type, count() as total from access_ok
-    GROUP BY device_type
-    ORDER BY total DESC
-
-
-
-NODE endpoint
-SQL >
-
-    WITH (SELECT sum(total) FROM count_access) AS total_acesses
-    SELECT device_type, round(100*total/total_acesses,2) as percentage FROM count_access
+    %
+    SELECT 
+    {%if defined(x_axis) and x_axis == 'hourly'%}
+      toHour(datetime) t, 
+    {%elif x_axis == 'daily'%}
+      toDate(datetime) t,
+    {%elif x_axis == 'monthly'%}
+      toMonth(datetime) t,
+    {%else%}
+      datetime t,
+    {%end%}
+      count() AS total 
+    FROM access_ok
+    GROUP BY t
+    ORDER BY t ASC
 
 

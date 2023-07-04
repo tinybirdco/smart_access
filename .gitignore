@@ -4,7 +4,7 @@
 /data-project/.tinyb
 
 # dependencies
-/dashboard/node_modules/*
+node_modules
 /dashboard/.pnp
 /dashboard.pnp.js
 
@@ -16,7 +16,7 @@
 /dashboard/out/
 
 # production
-/dashboard/build
+/dashboard/build/
 
 # misc
 /dashboard/.DS_Store

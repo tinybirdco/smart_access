@@ -14,19 +14,12 @@ SQL >
 
 
 
-NODE count_access
+NODE count_access_endpoint
 SQL >
 
-    SELECT device_type, count() as total from access_ok
-    GROUP BY device_type
+    SELECT access_point_id, count() as total from access_ok
+    GROUP BY access_point_id
     ORDER BY total DESC
-
-
-
-NODE endpoint
-SQL >
-
-    WITH (SELECT sum(total) FROM count_access) AS total_acesses
-    SELECT device_type, round(100*total/total_acesses,2) as percentage FROM count_access
+    LIMIT 5
 
 

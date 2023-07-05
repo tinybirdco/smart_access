@@ -49,15 +49,35 @@ export default function Dashboard() {
   let apiLatestActivity = `https://${TINYBIRD_HOST}/v0/pipes/api_latest_activity.json?customerId=Customer92092&token=${token}${date_from ? `&datetime_start=${date_from}` : ''}${date_to ? `&datetime_end=${date_to}` : ''}`;
   let apiAccessDenied = `https://${TINYBIRD_HOST}/v0/pipes/api_access_denied.json?customerId=Customer92092&token=${token}${date_from ? `&datetime_start=${date_from}` : ''}${date_to ? `&datetime_end=${date_to}` : ''}`;
 
-  quickRefresh ?
-    useInterval(() => {
-      fetchTinybirdUrl(apiAccessMethods, setAccessMethods);
-    }, msRefresh)
-    :
-    useInterval(() => {
-      fetchTinybirdUrl(apiAccessMethods, setAccessMethods);
-    }, msRefresh * 10000)
+  // quickRefresh ?
+  //   useInterval(() => {
+  //     fetchTinybirdUrl(apiAccessMethods, setAccessMethods);
+  //   }, msRefresh)
+  //   :
+  //   useInterval(() => {
+  //     fetchTinybirdUrl(apiAccessMethods, setAccessMethods);
+  //   }, msRefresh * 10000)
 
+  useInterval(() => {
+    fetchTinybirdUrl(apiAccessMethods, setAccessMethods);
+  }, msRefresh)
+
+  useInterval(() => {
+    fetchTinybirdUrl(apiAccessPoints, setAccessPoints);
+  }, msRefresh)
+
+  useInterval(() => {
+    fetchTinybirdUrl(apiAccessTimes, setAccessTimes);
+  }, msRefresh)
+
+  useInterval(() => {
+    fetchTinybirdUrl(apiLatestActivity, setLatestActivity);
+  }, msRefresh)
+
+  useInterval(() => {
+    fetchTinybirdUrl(apiAccessDenied, setAccessDenied);
+  }, msRefresh)
+  
 
   useEffect(() => {
     fetchTinybirdUrl(apiAccessMethods, setAccessMethods);

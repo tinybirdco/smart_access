@@ -1,8 +1,8 @@
 
 SCHEMA >
     `access_points` Array(String) `json:$.access_points[:]`,
-    `id` String `json:$.id`,
+    `installation_id` String `json:$.installation_id`,
     `name` String `json:$.name`
 
 ENGINE "MergeTree"
-ENGINE_SORTING_KEY "access_points, id, name"
+ENGINE_SORTING_KEY "installation_id, access_points"

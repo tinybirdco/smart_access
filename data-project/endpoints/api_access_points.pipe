@@ -1,5 +1,7 @@
 TOKEN "dashboard_token" READ
 
+TOKEN "api_access_points_endpoint_read_3932" READ
+
 NODE access_ok
 SQL >
 
@@ -8,18 +10,30 @@ SQL >
     FROM pubsub_events_mv
     WHERE
         access_granted = 1
-        AND customer_id = {{ String(customerId, 'Customer92092', required=True) }}
-        AND timestamp >= toDateTime({{String(date_from, '2023-07-01 00:00:00', required=True)}})
-        AND timestamp <= toDateTime({{String(date_to, '2023-07-31 23:59:59', required=True)}})
+        AND customer_id = {{ String(customerId, 'Customer75279', required=True) }}
+        AND timestamp >= parseDateTimeBestEffort({{String(date_from, '2023-07-01T00:00:00Z', required=True)}})
+        AND timestamp <= parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59Z', required=True)}})
 
 
 
-NODE count_access_endpoint
+NODE count_access
 SQL >
 
     SELECT access_point_id, count() as total from access_ok
     GROUP BY access_point_id
     ORDER BY total DESC
     LIMIT 5
+
+
+
+NODE endpoint
+SQL >
+
+    SELECT  
+      concat(upper(substring(name, 1, 1)),substring(name, 2, length(name))) AS access_point_name,
+      total
+    FROM count_access
+    JOIN access_points
+    USING access_point_id
 
 

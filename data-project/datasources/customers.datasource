@@ -1,8 +1,8 @@
 
 SCHEMA >
-    `id` String `json:$.id`,
+    `customer_id` String `json:$.customer_id`,
     `installations` Array(String) `json:$.installations[:]`,
     `name` String `json:$.name`
 
 ENGINE "MergeTree"
-ENGINE_SORTING_KEY "id, name"
+ENGINE_SORTING_KEY "customer_id"

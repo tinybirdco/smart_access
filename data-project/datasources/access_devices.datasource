@@ -1,7 +1,8 @@
 
 SCHEMA >
-    `device_id` String `json:$.device_id`,
+    `access_device_id` String `json:$.access_device_id`,
+    `device_type` String `json:$.device_type`,
     `user_id` String `json:$.user_id`
 
 ENGINE "MergeTree"
-ENGINE_SORTING_KEY "device_id, user_id"
+ENGINE_SORTING_KEY "access_device_id, device_type, user_id"

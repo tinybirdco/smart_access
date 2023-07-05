@@ -8,9 +8,9 @@ SQL >
     FROM pubsub_events_mv
     WHERE
         access_granted = 1
-        AND customer_id = {{ String(customerId, 'Customer92092', required=True) }}
-        AND timestamp >= toDateTime({{String(date_from, '2023-07-01 00:00:00', required=True)}})
-        AND timestamp <= toDateTime({{String(date_to, '2023-07-31 23:59:59', required=True)}})
+        AND customer_id = {{ String(customerId, 'Customer75279', required=True) }}
+        AND timestamp >= parseDateTimeBestEffort({{String(date_from, '2023-07-01T00:00:00Z', required=True)}})
+        AND timestamp <= parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59Z', required=True)}})
 
 
 

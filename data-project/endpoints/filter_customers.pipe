@@ -3,6 +3,6 @@ TOKEN "dashboard_token" READ
 NODE endpoint
 SQL >
 
-    SELECT id, name FROM customers
+    SELECT customer_id, name FROM customers
 
 

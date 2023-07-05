@@ -6,7 +6,7 @@ SQL >
     %
     SELECT timestamp, user_name, access_point_id
     FROM pubsub_events_mv
-    WHERE customer_id = {{ String(customerId, 'Customer92092', required=True) }}
+    WHERE customer_id = {{ String(customerId, 'Customer75279', required=True) }}
     AND access_granted = 0
     ORDER BY timestamp DESC
     LIMIT 7

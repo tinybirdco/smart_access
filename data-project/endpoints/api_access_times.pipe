@@ -1,5 +1,7 @@
 TOKEN "dashboard_token" READ
 
+TOKEN "api_access_times_endpoint_read_1864" READ
+
 NODE access_ok
 SQL >
 
@@ -8,9 +10,9 @@ SQL >
     FROM pubsub_events_mv
     WHERE
         access_granted = 1
-        AND customer_id = {{ String(customerId, 'Customer92092', required=True) }}
-        AND timestamp >= toDateTime({{String(date_from, '2023-07-01 00:00:00', required=True)}})
-        AND timestamp <= toDateTime({{String(date_to, '2023-07-31 23:59:59', required=True)}})
+        AND customer_id = {{ String(customerId, 'Customer75279', required=True) }}
+        AND timestamp >= parseDateTimeBestEffort({{String(date_from, '2023-07-01T00:00:00Z', required=True)}})
+        AND timestamp <= parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59Z', required=True)}})
 
 
 
@@ -20,17 +22,77 @@ SQL >
     %
     SELECT 
     {%if defined(x_axis) and x_axis == 'hourly'%}
-      toHour(timestamp) t, 
+      toHour(timestamp) AS t, 
     {%elif x_axis == 'daily'%}
-      toDate(timestamp) t,
+      toDate(timestamp) AS t,
     {%elif x_axis == 'monthly'%}
-      toMonth(timestamp) t,
+      toMonth(timestamp) AS t,
     {%else%}
-      timestamp t,
+      timestamp AS t,
     {%end%}
       count() AS total 
     FROM access_ok
     GROUP BY t
+    ORDER BY t ASC
+
+
+
+NODE filling_hours_gaps
+SQL >
+
+    %
+    WITH
+      toDate(parseDateTimeBestEffort({{String(date_from, '2023-07-01T00:00:00Z', required=True)}})) AS d_from,
+      toDate(parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59Z', required=True)}})) AS d_to,
+      toHour(parseDateTimeBestEffort({{String(date_from, '2023-07-01T00:00:00Z', required=True)}})) AS hour_from,
+      toHour(parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59Z', required=True)}})) AS hour_to
+    SELECT
+      arrayJoin(
+        multiIf(date_diff('day', d_from, d_to) <= 1, range(0, 24, 1),
+              hour_from-hour_to==0, [hour_from],
+              range(hour_from, hour_to+1, 1))
+      ) as t
+
+
+
+NODE filling_days_gaps
+SQL >
+
+    %
+    SELECT toDate(parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59Z', required=True)}})) AS t
+    ORDER BY t ASC
+    WITH FILL
+    FROM toDate(parseDateTimeBestEffort({{String(date_from, '2023-07-01T00:00:00Z', required=True)}}))
+       TO toDate(parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59Z', required=True)}})) 
+       STEP interval 1 day
+
+
+
+NODE filling_months_gaps
+SQL >
+
+    %
+    WITH
+      toMonth(parseDateTimeBestEffort({{String(date_from, '2023-07-01T00:00:00Z', required=True)}})) AS month_from,
+      toMonth(parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59Z', required=True)}})) AS month_to
+    SELECT
+      if(month_from==month_to, arrayJoin([month_from]), arrayJoin(range(month_from, month_to+1, 1))) as t
+
+
+
+NODE endpoint
+SQL >
+
+    %
+    SELECT * 
+    FROM timely_grouped_access
+    {%if defined(x_axis) and x_axis == 'hourly'%}
+    RIGHT JOIN filling_hours_gaps USING t
+    {%elif x_axis == 'daily'%}
+    RIGHT JOIN filling_days_gaps USING t
+    {%elif x_axis == 'monthly'%}
+    RIGHT JOIN filling_months_gaps USING t
+    {%end%}
     ORDER BY t ASC
 
 

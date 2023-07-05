@@ -13,7 +13,7 @@ import Head from "next/head";
 const TINYBIRD_HOST = process.env.NEXT_PUBLIC_TINYBIRD_HOST;
 const TINYBIRD_TOKEN = process.env.NEXT_PUBLIC_TINYBIRD_TOKEN;
 
-const MS_REFRESH = 2000;
+const MS_REFRESH = 20000;
 
 export default function Dashboard() {
   let msRefresh = MS_REFRESH;
@@ -23,7 +23,7 @@ export default function Dashboard() {
   const now = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000);
 
   const [dates, setDates] = useState({
-    from: new Date(2023, 1, 1),
+    from: new Date(),
     to: new Date()
   }
   );
@@ -39,20 +39,20 @@ export default function Dashboard() {
   const [accessDenied, setAccessDenied] = useState([]);
 
   const [customers, setCustomers] = useState('');
-  const [customerId, setCustomerId] = useState('Customer12988');
+  const [customerId, setCustomerId] = useState('Customer75279');
 
   const [accessTimesGrouping, setAccessTimesGrouping] = useState('hourly');
 
-  let date_from = dates.from ? new Date(dates.from.getTime() - dates.from.getTimezoneOffset() * 60000).toISOString() : date_from;
+  let date_from = dates.from ? new Date(dates.from.getTime() - dates.from.getTimezoneOffset() * 60000).toISOString() : new Date(2023, 5, 1).toISOString();
   let date_to = dates.to ? new Date(dates.to.getTime() - dates.to.getTimezoneOffset() * 60000 + 60000 * 60 * 24 - 1).toISOString() : date_from;
 
   let filterCustomers = `https://${TINYBIRD_HOST}/v0/pipes/filter_customers.json?token=${token}`;
 
-  let apiAccessMethods = `https://${TINYBIRD_HOST}/v0/pipes/api_access_methods.json?customerId=${customerId}&token=${token}${date_from ? `&datetime_start=${date_from}` : ''}${date_to ? `&datetime_end=${date_to}` : ''}`;
-  let apiAccessPoints = `https://${TINYBIRD_HOST}/v0/pipes/api_access_points.json?customerId=${customerId}&token=${token}${date_from ? `&datetime_start=${date_from}` : ''}${date_to ? `&datetime_end=${date_to}` : ''}`;
-  let apiAccessTimes = `https://${TINYBIRD_HOST}/v0/pipes/api_access_times.json?customerId=${customerId}&token=${token}${date_from ? `&datetime_start=${date_from}` : ''}${date_to ? `&datetime_end=${date_to}` : ''}&x_axis=${accessTimesGrouping}`;
-  let apiLatestActivity = `https://${TINYBIRD_HOST}/v0/pipes/api_latest_activity.json?customerId=${customerId}&token=${token}${date_from ? `&datetime_start=${date_from}` : ''}${date_to ? `&datetime_end=${date_to}` : ''}`;
-  let apiAccessDenied = `https://${TINYBIRD_HOST}/v0/pipes/api_access_denied.json?customerId=${customerId}&token=${token}${date_from ? `&datetime_start=${date_from}` : ''}${date_to ? `&datetime_end=${date_to}` : ''}`;
+  let apiAccessMethods = `https://${TINYBIRD_HOST}/v0/pipes/api_access_methods.json?customerId=${customerId}&token=${token}${date_from ? `&date_from=${date_from}` : ''}${date_to ? `&date_to=${date_to}` : ''}`;
+  let apiAccessPoints = `https://${TINYBIRD_HOST}/v0/pipes/api_access_points.json?customerId=${customerId}&token=${token}${date_from ? `&date_from=${date_from}` : ''}${date_to ? `&date_to=${date_to}` : ''}`;
+  let apiAccessTimes = `https://${TINYBIRD_HOST}/v0/pipes/api_access_times.json?customerId=${customerId}&token=${token}${date_from ? `&date_from=${date_from}` : ''}${date_to ? `&date_to=${date_to}` : ''}&x_axis=${accessTimesGrouping}`;
+  let apiLatestActivity = `https://${TINYBIRD_HOST}/v0/pipes/api_latest_activity.json?customerId=${customerId}&token=${token}${date_from ? `&date_from=${date_from}` : ''}${date_to ? `&date_to=${date_to}` : ''}`;
+  let apiAccessDenied = `https://${TINYBIRD_HOST}/v0/pipes/api_access_denied.json?customerId=${customerId}&token=${token}${date_from ? `&date_from=${date_from}` : ''}${date_to ? `&date_to=${date_to}` : ''}`;
 
   // quickRefresh ?
   //   useInterval(() => {
@@ -167,7 +167,7 @@ export default function Dashboard() {
                 className="mt-2 max-w-xs"
               >
                 {customers && customers.map((elem, i) => (
-                  <SelectItem key={i} value={elem.id}>{elem.name}</SelectItem>
+                  <SelectItem key={i} value={elem.customer_id}>{elem.name}</SelectItem>
                 ))}
               </Select>
             </div> : ''}
@@ -219,8 +219,8 @@ export default function Dashboard() {
             <BarChart
               className="mt-6"
               data={accessPoints}
-              index="access_point_id"
-              categories={getCategories(accessPoints, 'access_point_id')}
+              index="access_point_name"
+              categories={getCategories(accessPoints, 'access_point_name')}
               colors={["blue", "teal", "amber", "rose", "indigo", "emerald"]}
               yAxisWidth={120}
               layout="vertical"

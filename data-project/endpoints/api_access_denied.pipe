@@ -1,0 +1,26 @@
+TOKEN "dashboard_token" READ
+
+NODE latest_denied_access_events
+SQL >
+
+    %
+    SELECT datetime, user_name, access_point_id
+    FROM pubsub_events_mv
+    WHERE customer_id = {{ String(customerId, 'Customer92092', required=True) }}
+    AND access_granted = 0
+    ORDER BY datetime DESC
+    LIMIT 7
+
+
+
+NODE composing_message
+SQL >
+
+    %
+    SELECT 
+      datetime as when,
+      user_name as who,
+      access_point_id as where
+    FROM latest_denied_access_events
+
+

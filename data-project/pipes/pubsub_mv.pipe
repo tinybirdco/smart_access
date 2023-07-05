@@ -9,7 +9,7 @@ NODE pubsub_mv_1
 SQL >
 
     SELECT 
-      parseDateTimeBestEffort(JSONExtractString(message, 'timestamp')) as datetime,
+      parseDateTimeBestEffort(JSONExtractString(message, 'timestamp')) as timestamp,
       JSONExtractString(message, 'customer_id') as customer_id,
       JSONExtractString(message, 'installation_id') as installation_id,
       JSONExtractString(message, 'access_point_id') as access_point_id,
@@ -23,6 +23,6 @@ SQL >
 TYPE materialized
 DATASOURCE pubsub_events_mv
 ENGINE "MergeTree"
-ENGINE_PARTITION_KEY "toYYYYMM(datetime)"
-ENGINE_SORTING_KEY "customer_id, installation_id, access_point_id, device_type, datetime"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "customer_id, installation_id, access_point_id, timestamp, device_type, device_id, access_granted"
 

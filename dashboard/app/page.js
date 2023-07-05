@@ -38,16 +38,21 @@ export default function Dashboard() {
   const [latestActivity, setLatestActivity] = useState([]);
   const [accessDenied, setAccessDenied] = useState([]);
 
+  const [customers, setCustomers] = useState('');
+  const [customerId, setCustomerId] = useState('Customer12988');
+
   const [accessTimesGrouping, setAccessTimesGrouping] = useState('hourly');
 
   let date_from = dates.from ? new Date(dates.from.getTime() - dates.from.getTimezoneOffset() * 60000).toISOString() : date_from;
   let date_to = dates.to ? new Date(dates.to.getTime() - dates.to.getTimezoneOffset() * 60000 + 60000 * 60 * 24 - 1).toISOString() : date_from;
 
-  let apiAccessMethods = `https://${TINYBIRD_HOST}/v0/pipes/api_access_methods.json?customerId=Customer92092&token=${token}${date_from ? `&datetime_start=${date_from}` : ''}${date_to ? `&datetime_end=${date_to}` : ''}`;
-  let apiAccessPoints = `https://${TINYBIRD_HOST}/v0/pipes/api_access_points.json?customerId=Customer92092&token=${token}${date_from ? `&datetime_start=${date_from}` : ''}${date_to ? `&datetime_end=${date_to}` : ''}`;
-  let apiAccessTimes = `https://${TINYBIRD_HOST}/v0/pipes/api_access_times.json?customerId=Customer92092&token=${token}${date_from ? `&datetime_start=${date_from}` : ''}${date_to ? `&datetime_end=${date_to}` : ''}&x_axis=${accessTimesGrouping}`;
-  let apiLatestActivity = `https://${TINYBIRD_HOST}/v0/pipes/api_latest_activity.json?customerId=Customer92092&token=${token}${date_from ? `&datetime_start=${date_from}` : ''}${date_to ? `&datetime_end=${date_to}` : ''}`;
-  let apiAccessDenied = `https://${TINYBIRD_HOST}/v0/pipes/api_access_denied.json?customerId=Customer92092&token=${token}${date_from ? `&datetime_start=${date_from}` : ''}${date_to ? `&datetime_end=${date_to}` : ''}`;
+  let filterCustomers = `https://${TINYBIRD_HOST}/v0/pipes/filter_customers.json?token=${token}`;
+
+  let apiAccessMethods = `https://${TINYBIRD_HOST}/v0/pipes/api_access_methods.json?customerId=${customerId}&token=${token}${date_from ? `&datetime_start=${date_from}` : ''}${date_to ? `&datetime_end=${date_to}` : ''}`;
+  let apiAccessPoints = `https://${TINYBIRD_HOST}/v0/pipes/api_access_points.json?customerId=${customerId}&token=${token}${date_from ? `&datetime_start=${date_from}` : ''}${date_to ? `&datetime_end=${date_to}` : ''}`;
+  let apiAccessTimes = `https://${TINYBIRD_HOST}/v0/pipes/api_access_times.json?customerId=${customerId}&token=${token}${date_from ? `&datetime_start=${date_from}` : ''}${date_to ? `&datetime_end=${date_to}` : ''}&x_axis=${accessTimesGrouping}`;
+  let apiLatestActivity = `https://${TINYBIRD_HOST}/v0/pipes/api_latest_activity.json?customerId=${customerId}&token=${token}${date_from ? `&datetime_start=${date_from}` : ''}${date_to ? `&datetime_end=${date_to}` : ''}`;
+  let apiAccessDenied = `https://${TINYBIRD_HOST}/v0/pipes/api_access_denied.json?customerId=${customerId}&token=${token}${date_from ? `&datetime_start=${date_from}` : ''}${date_to ? `&datetime_end=${date_to}` : ''}`;
 
   // quickRefresh ?
   //   useInterval(() => {
@@ -77,7 +82,7 @@ export default function Dashboard() {
   useInterval(() => {
     fetchTinybirdUrl(apiAccessDenied, setAccessDenied);
   }, msRefresh)
-  
+
 
   useEffect(() => {
     fetchTinybirdUrl(apiAccessMethods, setAccessMethods);
@@ -99,6 +104,31 @@ export default function Dashboard() {
     fetchTinybirdUrl(apiAccessDenied, setAccessDenied);
   }, [apiAccessDenied]);
 
+  useEffect(() => {
+    fetchTinybirdUrl(filterCustomers, setCustomers);
+  }, [filterCustomers]);
+
+  const handleChangeCustomer = (value) => {
+    setCustomerId(value);
+    console.log(value)
+  };
+
+  const validateInputToken = async (inputValue) => {
+    const response = await fetch(`https://${TINYBIRD_HOST}/v0/pipes?token=${inputValue}`);
+    // console.log(response.status)
+    return response.status === 200;
+  };
+
+
+  const handleInputTokenChange = async (event) => {
+    const newToken = event.target.value;
+    const isValid = await validateInputToken(newToken);
+    if (isValid) {
+      setToken(newToken);
+      // console.log(newToken);
+    }
+  };
+
   const percentageFormatter = (number) => `${Intl.NumberFormat("us").format(number).toString()}%`;
 
   return (
@@ -108,6 +138,41 @@ export default function Dashboard() {
         <title>Smart Access Dashboard</title>
       </Head>
       <main className="bg-slate-50 p-6 sm:p-10">
+        <Grid
+          numColsSm={2}
+          numColsMd={4}
+          numColsLg={6}
+          gapX="gap-x-3"
+          gapY="gap-y-3"
+          className="mt-3 mb-2"
+        >
+          <div className="ml-4 mt-2">
+            <Text>Token</Text>
+            <TextInput
+              value={token}
+              onChange={handleInputTokenChange}
+              className="mt-2 max-w-xs"
+            // error={async (value) => !await validateInputToken(value)}
+            />
+          </div>
+
+          {customers && customers.length > 1 ?
+            <div className="ml-4 mt-2">
+              <Text>Company</Text>
+              <Select
+                defaultValue={customerId}
+                value={customerId}
+                onValueChange={handleChangeCustomer}
+                placeholder="All"
+                className="mt-2 max-w-xs"
+              >
+                {customers && customers.map((elem, i) => (
+                  <SelectItem key={i} value={elem.id}>{elem.name}</SelectItem>
+                ))}
+              </Select>
+            </div> : ''}
+        </Grid>
+
 
         <Card>
           <Flex>
@@ -219,7 +284,7 @@ export default function Dashboard() {
               <TableBody>
                 {latestActivity && latestActivity.map((item, i) => (
                   <TableRow key={i}>
-                    <TableCell>{item.datetime}</TableCell>
+                    <TableCell>{item.timestamp}</TableCell>
                     <TableCell>{item.message}</TableCell>
                   </TableRow>
                 ))}

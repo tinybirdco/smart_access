@@ -2,7 +2,7 @@ NODE access_points_5min_window_0
 SQL >
 
     SELECT
-        toStartOfFiveMinutes(datetime) AS datetime_window,
+        toStartOfFiveMinutes(timestamp) AS datetime_window,
         customer_id,
         installation_id,
         access_point_id,
@@ -19,5 +19,5 @@ TYPE materialized
 DATASOURCE access_points_5min_window_mv
 ENGINE "AggregatingMergeTree"
 ENGINE_PARTITION_KEY "toYYYYMM(datetime_window)"
-ENGINE_SORTING_KEY "customer_id, datetime_window, installation_id, access_point_id"
+ENGINE_SORTING_KEY "customer_id, installation_id, access_point_id, datetime_window"
 

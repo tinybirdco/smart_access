@@ -1,4 +1,3 @@
-# Data Source created from Pipe 'access_device_usage'
 
 SCHEMA >
     `datetime_window` DateTime,

@@ -9,8 +9,8 @@ SQL >
     WHERE
         access_granted = 1
         AND customer_id = {{ String(customerId, 'Customer92092', required=True) }}
-        AND datetime >= toDateTime({{String(date_from, '2023-07-01 00:00:00', required=True)}})
-        AND datetime <= toDateTime({{String(date_to, '2023-07-31 23:59:59', required=True)}})
+        AND timestamp >= toDateTime({{String(date_from, '2023-07-01 00:00:00', required=True)}})
+        AND timestamp <= toDateTime({{String(date_to, '2023-07-31 23:59:59', required=True)}})
 
 
 
@@ -20,13 +20,13 @@ SQL >
     %
     SELECT 
     {%if defined(x_axis) and x_axis == 'hourly'%}
-      toHour(datetime) t, 
+      toHour(timestamp) t, 
     {%elif x_axis == 'daily'%}
-      toDate(datetime) t,
+      toDate(timestamp) t,
     {%elif x_axis == 'monthly'%}
-      toMonth(datetime) t,
+      toMonth(timestamp) t,
     {%else%}
-      datetime t,
+      timestamp t,
     {%end%}
       count() AS total 
     FROM access_ok

@@ -4,11 +4,27 @@ NODE latest_events
 SQL >
 
     %
-    SELECT datetime, access_granted, user_name, access_point_id
+    SELECT timestamp, access_granted, user_name, access_point_id
     FROM pubsub_events_mv
     WHERE customer_id = {{ String(customerId, 'Customer92092', required=True) }}
-    ORDER BY datetime DESC
+    ORDER BY timestamp DESC
     LIMIT 7
+
+
+
+NODE api_latest_activity_2
+SQL >
+
+    SELECT * FROM latest_events le
+    JOIN access_points ap ON le.access_point_id=ap.id
+
+
+
+NODE api_latest_activity_3
+SQL >
+
+    SELECT * FROM access_points
+    where id = 'AccessPoint11058'
 
 
 
@@ -17,7 +33,7 @@ SQL >
 
     %
     SELECT 
-      datetime,
+      timestamp,
       if(access_granted, concat(user_name, ' accessed ', access_point_id), concat(user_name, ' denied access to ', access_point_id)) AS message
     FROM latest_events
 

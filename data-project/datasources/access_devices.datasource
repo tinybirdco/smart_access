@@ -1,0 +1,7 @@
+
+SCHEMA >
+    `device_id` String `json:$.device_id`,
+    `user_id` String `json:$.user_id`
+
+ENGINE "MergeTree"
+ENGINE_SORTING_KEY "device_id, user_id"

@@ -1,0 +1,9 @@
+
+SCHEMA >
+    `allowed_users` Array(String) `json:$.allowed_users[:]`,
+    `id` String `json:$.id`,
+    `name` String `json:$.name`,
+    `traffic_weight` Int16 `json:$.traffic_weight`
+
+ENGINE "MergeTree"
+ENGINE_SORTING_KEY "allowed_users, id, name, traffic_weight"

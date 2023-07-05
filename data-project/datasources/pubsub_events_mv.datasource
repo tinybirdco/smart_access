@@ -1,16 +1,16 @@
 # Data Source created from Pipe 'pubsub_mv'
 
 SCHEMA >
-    `datetime` DateTime,
-    `customer_id` String,
-    `installation_id` String,
-    `access_point_id` String,
-    `user_id` String,
-    `user_name` String,
-    `device_type` String,
-    `device_id` String,
-    `access_granted` UInt8
+    `timestamp` DateTime `json:$.timestamp`,
+    `customer_id` String `json:$.customer_id`,
+    `installation_id` String `json:$.installation_id`,
+    `access_point_id` String `json:$.access_point_id`,
+    `user_id` String `json:$.user_id`,
+    `user_name` String `json:$.user_name`,
+    `device_type` String `json:$.device_type`,
+    `device_id` String `json:$.device_id`,
+    `access_granted` UInt8 `json:$.access_granted`
 
 ENGINE "MergeTree"
-ENGINE_PARTITION_KEY "toYYYYMM(datetime)"
-ENGINE_SORTING_KEY "customer_id, installation_id, access_point_id, device_type, datetime"
+ENGINE_PARTITION_KEY "toYYYYMM(timestamp)"
+ENGINE_SORTING_KEY "customer_id, installation_id, access_point_id, timestamp, device_type, device_id, access_granted"

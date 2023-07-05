@@ -10,4 +10,4 @@ SCHEMA >
 
 ENGINE "AggregatingMergeTree"
 ENGINE_PARTITION_KEY "toYYYYMM(datetime_window)"
-ENGINE_SORTING_KEY "customer_id, datetime_window, installation_id, access_point_id"
+ENGINE_SORTING_KEY "customer_id, installation_id, access_point_id, datetime_window"

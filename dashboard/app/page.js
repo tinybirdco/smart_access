@@ -15,6 +15,7 @@ const TINYBIRD_TOKEN = process.env.NEXT_PUBLIC_TINYBIRD_TOKEN;
 
 const MS_REFRESH = 20000;
 
+
 export default function Dashboard() {
   let msRefresh = MS_REFRESH;
 
@@ -23,7 +24,7 @@ export default function Dashboard() {
   const now = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000);
 
   const [dates, setDates] = useState({
-    from: new Date(),
+    from: new Date(2023, 5, 1),
     to: new Date()
   }
   );
@@ -39,7 +40,7 @@ export default function Dashboard() {
   const [accessDenied, setAccessDenied] = useState([]);
 
   const [customers, setCustomers] = useState('');
-  const [customerId, setCustomerId] = useState('Customer75279');
+  const [customerId, setCustomerId] = useState('Customer87777');
 
   const [accessTimesGrouping, setAccessTimesGrouping] = useState('hourly');
 

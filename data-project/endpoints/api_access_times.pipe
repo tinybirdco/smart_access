@@ -2,6 +2,8 @@ TOKEN "dashboard_token" READ
 
 TOKEN "api_access_times_endpoint_read_1864" READ
 
+TOKEN "hogan_ltd_token" READ
+
 NODE access_ok
 SQL >
 

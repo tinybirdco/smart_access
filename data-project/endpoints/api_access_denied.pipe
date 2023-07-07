@@ -1,5 +1,7 @@
 TOKEN "dashboard_token" READ
 
+TOKEN "hogan_ltd_token" READ
+
 NODE latest_denied_access_events
 SQL >
 
@@ -8,6 +10,7 @@ SQL >
     FROM pubsub_events_mv
     WHERE customer_id = {{ String(customerId, 'Customer75279', required=True) }}
     AND access_granted = 0
+    AND timestamp >= parseDateTimeBestEffort({{String(date_to, '2023-07-01T23:59:59Z', required=True)}}) - INTERVAL 1 day
     ORDER BY timestamp DESC
     LIMIT 7
 

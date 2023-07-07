@@ -1,5 +1,7 @@
 TOKEN "dashboard_token" READ
 
+TOKEN "hogan_ltd_token" READ
+
 NODE endpoint
 SQL >
 

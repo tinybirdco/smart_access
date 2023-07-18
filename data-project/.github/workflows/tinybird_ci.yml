@@ -16,6 +16,9 @@
 
     concurrency: ${{ github.workflow }}-${{ github.event.pull_request.number }}
 
+    env:
+      DATA_PROJECT_DIR: data-project
+
     jobs:
         ci: # ci using environments from workspace 'AccessCards'
           uses: tinybirdco/ci/.github/workflows/ci.yml@main

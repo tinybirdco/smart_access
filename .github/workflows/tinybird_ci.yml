@@ -16,14 +16,12 @@
 
     concurrency: ${{ github.workflow }}-${{ github.event.pull_request.number }}
 
-    env:
-      DATA_PROJECT_DIR: data-project
-
     jobs:
         ci: # ci using environments from workspace 'AccessCards'
           uses: tinybirdco/ci/.github/workflows/ci.yml@cd-gh
           with:
             tb_deploy: true
+            data_project_dir: data-project
           secrets:
             admin_token: ${{ secrets.ADMIN_TOKEN }}  # set admin token associated to an account in GitHub secrets
             tb_host: https://api.tinybird.co

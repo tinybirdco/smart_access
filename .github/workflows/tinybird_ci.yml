@@ -20,7 +20,6 @@
         ci: # ci using environments from workspace 'AccessCards'
           uses: tinybirdco/ci/.github/workflows/ci.yml@add-cd
           with:
-            tb_deploy: true
             data_project_dir: data-project
           secrets:
             admin_token: ${{ secrets.ADMIN_TOKEN }}  # set admin token associated to an account in GitHub secrets

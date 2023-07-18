@@ -1,0 +1,22 @@
+
+    ##################################################
+    ###   Visit https://github.com/tinybirdco/ci   ###
+    ###   for more details or custom CI/CD         ###
+    ##################################################
+
+    name: Tinybird - CD Workflow
+
+    on:
+      workflow_dispatch:
+      push:
+        branches:
+          - main
+          - master
+    jobs:
+      cd:  # deploy changes to workspace 'AccessCards'
+        uses: tinybirdco/ci/.github/workflows/cd.yml@main
+        with:
+          tb_deploy: true
+        secrets:
+          admin_token: ${{ secrets.ADMIN_TOKEN }}  # set admin token associated to an account in GitHub secrets
+          tb_host: https://api.tinybird.co

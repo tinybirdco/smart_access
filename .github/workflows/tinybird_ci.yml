@@ -21,7 +21,7 @@
 
     jobs:
         ci: # ci using environments from workspace 'AccessCards'
-          uses: tinybirdco/ci/.github/workflows/ci.yml@main
+          uses: tinybirdco/ci/.github/workflows/ci.yml@cd-gh
           with:
             tb_deploy: true
           secrets:

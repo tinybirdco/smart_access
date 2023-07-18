@@ -2,6 +2,7 @@
 
 # data-project
 /data-project/.tinyb
+.diff_tmp
 
 # dependencies
 node_modules

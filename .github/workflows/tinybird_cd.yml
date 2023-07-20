@@ -14,7 +14,7 @@
           - master
     jobs:
       cd:  # deploy changes to workspace 'AccessCards'
-        uses: tinybirdco/ci/.github/workflows/cd.yml@add-cd
+        uses: tinybirdco/ci/.github/workflows/cd.yml@v1.1.0
         with:
           tb_deploy: false
           data_project_dir: data-project

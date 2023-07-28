@@ -14,9 +14,10 @@
           - master
     jobs:
       cd:  # deploy changes to workspace 'AccessCards'
-        uses: tinybirdco/ci/.github/workflows/cd.yml@main
+        uses: tinybirdco/ci/.github/workflows/cd.yml@v1.1.0
         with:
-          tb_deploy: true
+          tb_deploy: false
+          data_project_dir: data-project
         secrets:
           admin_token: ${{ secrets.ADMIN_TOKEN }}  # set admin token associated to an account in GitHub secrets
           tb_host: https://api.tinybird.co

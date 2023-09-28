@@ -18,7 +18,7 @@
 
     jobs:
         ci: # ci using environments from workspace 'AccessCards'
-          uses: tinybirdco/ci/.github/workflows/ci.yml@v1.1.0
+          uses: tinybirdco/ci/.github/workflows/ci.yml@v1.1.8
           with:
             data_project_dir: data-project
           secrets:

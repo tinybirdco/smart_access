@@ -3,6 +3,7 @@
 # data-project
 /data-project/.tinyb
 .diff_tmp
+.tinyb
 
 # dependencies
 node_modules

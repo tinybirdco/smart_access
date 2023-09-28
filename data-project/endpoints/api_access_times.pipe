@@ -1,7 +1,5 @@
 TOKEN "dashboard_token" READ
 
-TOKEN "api_access_times_endpoint_read_1864" READ
-
 TOKEN "hogan_ltd_token" READ
 
 NODE access_ok
@@ -13,8 +11,8 @@ SQL >
     WHERE
         access_granted = 1
         AND customer_id = {{ String(customerId, 'Customer75279', required=True) }}
-        AND timestamp >= parseDateTimeBestEffort({{String(date_from, '2023-07-01T00:00:00Z', required=True)}})
-        AND timestamp <= parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59Z', required=True)}})
+        AND timestamp >= parseDateTimeBestEffort({{String(date_from, '2023-07-01T00:00:00.000Z', required=True)}})
+        AND timestamp <= parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59.999Z', required=True)}})
 
 
 
@@ -23,31 +21,29 @@ SQL >
 
     %
     SELECT 
-    {%if defined(x_axis) and x_axis == 'hourly'%}
-      toHour(timestamp) AS t, 
-    {%elif x_axis == 'daily'%}
-      toDate(timestamp) AS t,
-    {%elif x_axis == 'monthly'%}
+    {%if (x_axis == 'monthly') or ( defined(x_axis) and x_axis == 'none' and date_diff_in_days(date_to, date_from, date_format="%Y-%m-%dT%H:%M:%S.%fz") > 90 ) %}
       toMonth(timestamp) AS t,
+    {%elif (x_axis == 'daily') or ( defined(x_axis) and x_axis == 'none' and date_diff_in_days(date_to, date_from, date_format="%Y-%m-%dT%H:%M:%S.%fz") > 7 ) %}
+      toDate(timestamp) AS t,
+    {%elif (defined(x_axis) and x_axis == 'hourly') or ( defined(x_axis) and x_axis == 'none' and date_diff_in_days(date_to, date_from, date_format="%Y-%m-%dT%H:%M:%S.%fz") > 1 ) %}
+      toHour(timestamp) AS t, 
     {%else%}
       timestamp AS t,
     {%end%}
-      count() AS total 
+    count() AS total
     FROM access_ok
     GROUP BY t
     ORDER BY t ASC
-
-
 
 NODE filling_hours_gaps
 SQL >
 
     %
     WITH
-      toDate(parseDateTimeBestEffort({{String(date_from, '2023-07-01T00:00:00Z', required=True)}})) AS d_from,
-      toDate(parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59Z', required=True)}})) AS d_to,
-      toHour(parseDateTimeBestEffort({{String(date_from, '2023-07-01T00:00:00Z', required=True)}})) AS hour_from,
-      toHour(parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59Z', required=True)}})) AS hour_to
+      toDate(parseDateTimeBestEffort({{String(date_from, '2023-07-01T00:00:00.000Z', required=True)}})) AS d_from,
+      toDate(parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59.999Z', required=True)}})) AS d_to,
+      toHour(parseDateTimeBestEffort({{String(date_from, '2023-07-01T00:00:00.000Z', required=True)}})) AS hour_from,
+      toHour(parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59.999Z', required=True)}})) AS hour_to
     SELECT
       arrayJoin(
         multiIf(date_diff('day', d_from, d_to) <= 1, range(0, 24, 1),
@@ -61,11 +57,11 @@ NODE filling_days_gaps
 SQL >
 
     %
-    SELECT toDate(parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59Z', required=True)}})) AS t
+    SELECT toDate(parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59.999Z', required=True)}})) AS t
     ORDER BY t ASC
     WITH FILL
-    FROM toDate(parseDateTimeBestEffort({{String(date_from, '2023-07-01T00:00:00Z', required=True)}}))
-       TO toDate(parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59Z', required=True)}})) 
+    FROM toDate(parseDateTimeBestEffort({{String(date_from, '2023-07-01T00:00:00.000Z', required=True)}}))
+       TO toDate(parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59.999Z', required=True)}})) 
        STEP interval 1 day
 
 
@@ -75,8 +71,8 @@ SQL >
 
     %
     WITH
-      toMonth(parseDateTimeBestEffort({{String(date_from, '2023-07-01T00:00:00Z', required=True)}})) AS month_from,
-      toMonth(parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59Z', required=True)}})) AS month_to
+      toMonth(parseDateTimeBestEffort({{String(date_from, '2023-07-01T00:00:00.000Z', required=True)}})) AS month_from,
+      toMonth(parseDateTimeBestEffort({{String(date_to, '2023-07-31T23:59:59.999Z', required=True)}})) AS month_to
     SELECT
       if(month_from==month_to, arrayJoin([month_from]), arrayJoin(range(month_from, month_to+1, 1))) as t
 
@@ -88,13 +84,11 @@ SQL >
     %
     SELECT * 
     FROM timely_grouped_access
-    {%if defined(x_axis) and x_axis == 'hourly'%}
-    RIGHT JOIN filling_hours_gaps USING t
-    {%elif x_axis == 'daily'%}
-    RIGHT JOIN filling_days_gaps USING t
-    {%elif x_axis == 'monthly'%}
+    {%if (x_axis == 'monthly') or ( defined(x_axis) and x_axis == 'none' and date_diff_in_days(date_to, date_from, date_format="%Y-%m-%dT%H:%M:%S.%fz") > 90 ) %}
     RIGHT JOIN filling_months_gaps USING t
+    {%elif (x_axis == 'daily') or ( defined(x_axis) and x_axis == 'none' and date_diff_in_days(date_to, date_from, date_format="%Y-%m-%dT%H:%M:%S.%fz") > 7 ) %}
+    RIGHT JOIN filling_days_gaps USING t
+    {%elif (defined(x_axis) and x_axis == 'hourly') or ( defined(x_axis) and x_axis == 'none' and date_diff_in_days(date_to, date_from, date_format="%Y-%m-%dT%H:%M:%S.%fz") > 1 ) %}
+    RIGHT JOIN filling_days_gaps USING t
     {%end%}
     ORDER BY t ASC
-
-

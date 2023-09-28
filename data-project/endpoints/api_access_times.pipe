@@ -89,6 +89,6 @@ SQL >
     {%elif (x_axis == 'daily') or ( defined(x_axis) and x_axis == 'none' and date_diff_in_days(date_to, date_from, date_format="%Y-%m-%dT%H:%M:%S.%fz") > 7 ) %}
     RIGHT JOIN filling_days_gaps USING t
     {%elif (defined(x_axis) and x_axis == 'hourly') or ( defined(x_axis) and x_axis == 'none' and date_diff_in_days(date_to, date_from, date_format="%Y-%m-%dT%H:%M:%S.%fz") > 1 ) %}
-    RIGHT JOIN filling_days_gaps USING t
+    RIGHT JOIN filling_hours_gaps USING t
     {%end%}
     ORDER BY t ASC
